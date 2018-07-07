@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Learn-RxJava</string>
     <string name="hello">Hello RxJava!</string>
+    <string name="subscribe_1">subscribe重载方法1</string>
+    <string name="subscribe_2">subscribe重载方法2</string>
+    <string name="observer">observer观察者</string>
 </resources>

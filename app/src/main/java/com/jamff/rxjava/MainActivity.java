@@ -8,7 +8,9 @@ import android.view.View;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -24,15 +26,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initView() {
         findViewById(R.id.bt_hello).setOnClickListener(this);
+        findViewById(R.id.bt_subscribe_1).setOnClickListener(this);
+        findViewById(R.id.bt_subscribe_2).setOnClickListener(this);
+        findViewById(R.id.bt_observer).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+
             case R.id.bt_hello:
                 helloRxJava_create();
                 helloRxJava_just();
                 helloRxJavaLambda();
+                break;
+
+            case R.id.bt_subscribe_1:
+                subscribe_1();
+                break;
+
+            case R.id.bt_subscribe_2:
+                subscribe_2();
+                break;
+
+            case R.id.bt_observer:
+                observer();
                 break;
         }
     }
@@ -62,5 +80,75 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void helloRxJavaLambda() {
         Disposable disposable = Observable.just("RxJava_Lambda").subscribe(s -> Log.d(TAG, s));
+    }
+
+    private void subscribe_1() {
+
+        Disposable disposable = Observable.just("Hello World").subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                Log.d(TAG, s);
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable throwable) throws Exception {
+                Log.e(TAG, throwable.getMessage());
+            }
+        }, new Action() {
+            @Override
+            public void run() throws Exception {
+                Log.d(TAG, "onComplete()");
+            }
+        });
+
+    }
+
+    private void subscribe_2() {
+
+        Disposable disposable = Observable.just("Hello World").subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                Log.d(TAG, s);
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable throwable) throws Exception {
+                Log.e(TAG, throwable.getMessage());
+            }
+        }, new Action() {
+            @Override
+            public void run() throws Exception {
+                Log.d(TAG, "onComplete()");
+            }
+        }, new Consumer<Disposable>() {
+            @Override
+            public void accept(Disposable disposable) throws Exception {
+                Log.d(TAG, "subscribe");
+            }
+        });
+    }
+
+    private void observer() {
+        Observable.just("Hello World").subscribe(new Observer<String>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                Log.d(TAG, "subscribe");
+            }
+
+            @Override
+            public void onNext(String s) {
+                Log.d(TAG, s);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e(TAG, e.getMessage());
+            }
+
+            @Override
+            public void onComplete() {
+                Log.d(TAG, "onComplete()");
+            }
+        });
     }
 }
