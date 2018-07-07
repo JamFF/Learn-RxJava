@@ -69,10 +69,13 @@ Observable.just("RxJava_just").subscribe(new Consumer<String>() {
 ### subscribe
 
 `subscribe`有多个重载方法。
->subscribe(onNext)
->subscribe(onNext, onError)
->subscribe(onNext, onError, onComplete)
->subscribe(onNext, onError, onComplete, onSubscribe)
+
+```java
+subscribe(onNext)
+subscribe(onNext, onError)
+subscribe(onNext, onError, onComplete)
+subscribe(onNext, onError, onComplete, onSubscribe)
+```
 
 使用第四个重载方法，观察执行顺序
 
@@ -101,9 +104,11 @@ Observable.just("Hello World").subscribe(new Consumer<String>() {
 ```
 
 执行结果：
-subscribe
-Hello World
-onComplete()
+```
+subscribe  
+Hello World  
+onComplete() 
+``` 
 
 ### Observer
 
@@ -134,9 +139,11 @@ Observable.just("Hello World").subscribe(new Observer<String>() {
 ```
 
 执行结果：
+```
 subscribe
 Hello World
 onComplete()
+```
 
 ### do操作符
 
