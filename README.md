@@ -49,11 +49,11 @@
 ## RxJava基础知识
 
 RxJava的使用通常需要三步。
-1. 创建观察者——[Observable](#Observable)
-2. 创建被观察者——[Observer](#Observer)
+1. 创建观察者——[Observable](#observable)
+2. 创建被观察者——[Observer](#observer)
 3. 使用[subscribe()](#subscribe)进行订阅
 
-### <span id = "Observable">Observable</span>
+### <span id = "observable">Observable</span>
 
 在下面例子中，`just()` 是创建操作符，创建一个 `Observable`；`Consumer` 是消费者用于接受单个值。
 
@@ -79,7 +79,7 @@ subscribe(onNext, onError, onComplete, onSubscribe)
 subscribe(observer)
 ```
 
-前四个方法更为相似，第五个方法在[Observer](#Observer)里具体说明。
+前四个方法更为相似，第五个方法在[Observer](#observer)里具体说明。
 
 * 前四个方法返回值为 `Disposable`，可以在发送完成之前解除订阅。
 * `onNext()`: 执行完事件队列中的一个事件后回调。
@@ -121,7 +121,7 @@ Hello World
 onComplete() 
 ``` 
 
-### <span id = "Observer">Observer</span>
+### <span id = "observer">Observer</span>
 
 RxJava2中，`Observable`不再支持订阅`Subscriber`，而是需要使用`Observer`作为观察者。
 
