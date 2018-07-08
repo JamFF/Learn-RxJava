@@ -128,16 +128,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
+    private Disposable mDisposable;
+
     private void observer() {
         Observable.just("Hello World").subscribe(new Observer<String>() {
             @Override
             public void onSubscribe(Disposable d) {
+                mDisposable = d;
                 Log.d(TAG, "subscribe");
             }
 
             @Override
             public void onNext(String s) {
                 Log.d(TAG, s);
+                if (!"Hello World".equals(s)) {
+                    // 接收到异常数据，可以解除订阅
+                    mDisposable.dispose();
+                }
             }
 
             @Override
