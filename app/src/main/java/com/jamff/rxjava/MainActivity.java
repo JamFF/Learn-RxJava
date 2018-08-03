@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initView() {
-        findViewById(R.id.bt_hello).setOnClickListener(this);
+        findViewById(R.id.bt_hello_world).setOnClickListener(this);
         findViewById(R.id.bt_subscribe_1).setOnClickListener(this);
         findViewById(R.id.bt_subscribe_2).setOnClickListener(this);
         findViewById(R.id.bt_observer).setOnClickListener(this);
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
 
-            case R.id.bt_hello:
+            case R.id.bt_hello_world:
                 helloRxJava_create();
                 helloRxJava_just();
                 helloRxJavaLambda();
