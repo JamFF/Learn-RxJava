@@ -79,9 +79,9 @@ subscribe(onNext, onError, onComplete, onSubscribe)
 subscribe(observer)
 ```
 
-前四个方法更为相似，第五个方法在[Observer](#observer)里具体说明。
+前五个方法更为相似，第六个方法在[Observer](#observer)里具体说明。
 
-* 前四个方法返回值为 `Disposable`，可以在发送完成之前解除订阅。
+* 前五个方法返回值为 `Disposable`，可以在发送完成之前解除订阅。
 * `onNext()`: 执行完事件队列中的一个事件后回调。
 * `onCompleted()`: 事件队列完结。RxJava 不仅把每个事件单独处理，还会把它们看做一个队列。RxJava 规定，当不会再有新的 `onNext()` 发出时，需要触发 `onCompleted()` 方法作为标志。
 * `onError()`: 事件队列异常。在事件处理过程中出异常时，`onError()`会被触发，同时队列自动终止，不允许再有事件发出。
@@ -125,7 +125,7 @@ onComplete()
 
 RxJava2中，`Observable`不再支持订阅`Subscriber`，而是需要使用`Observer`作为观察者。
 
-当然你也可以根据需求，像上面代码一样使用`Consumer`，其实等价于下面的代码
+当然你也可以根据需求，使用`Consumer`，其实等价于下面的代码。
 
 ```java
 Observable.just("Hello World").subscribe(new Observer<String>() {
@@ -165,7 +165,94 @@ onComplete()
 
 ### do操作符
 
-do操作符可以给Observable的生命周期的各个阶段加上一系列的回调监听
+do操作符可以给`Observable`的生命周期的各个阶段加上一系列的回调监听。例如下面代码，基本包含了`Observable`的完整生命周期。
+```java
+Disposable disposable = Observable.just("Hello")
+        .doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                Log.d(TAG, "doOnNext: " + s);
+            }
+        })
+        .doAfterNext(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                Log.d(TAG, "doAfterNext: " + s);
+            }
+        })
+        .doOnComplete(new Action() {
+            @Override
+            public void run() throws Exception {
+                Log.d(TAG, "doOnComplete: ");
+            }
+        })
+        // 订阅之后回调的方法
+        .doOnSubscribe(new Consumer<Disposable>() {
+            @Override
+            public void accept(Disposable disposable) throws Exception {
+                Log.d(TAG, "doOnSubscribe: ");
+            }
+        })
+        .doAfterTerminate(new Action() {
+            @Override
+            public void run() throws Exception {
+                Log.d(TAG, "doAfterTerminate: ");
+            }
+        })
+        .doFinally(new Action() {
+            @Override
+            public void run() throws Exception {
+                Log.d(TAG, "doFinally: ");
+            }
+        })
+        // Observable每发射一个数据就会触发这个回调，不仅包括onNext，还包括onError和onCompleted
+        .doOnEach(new Consumer<Notification<String>>() {
+            @Override
+            public void accept(Notification<String> stringNotification) throws Exception {
+                if (stringNotification.isOnNext()) {
+                    Log.d(TAG, "doOnEach: onNext");
+                } else if (stringNotification.isOnComplete()) {
+                    Log.d(TAG, "doOnEach: onComplete");
+                } else if (stringNotification.isOnError()) {
+                    Log.d(TAG, "doOnEach: onError");
+                }
+            }
+        })
+        // 订阅后可以取消订阅
+        .doOnLifecycle(new Consumer<Disposable>() {
+            @Override
+            public void accept(Disposable disposable) throws Exception {
+                Log.d(TAG, "doOnLifecycle: " + disposable.isDisposed());
+            }
+        }, new Action() {
+            @Override
+            public void run() throws Exception {
+                Log.d(TAG, "doOnLifecycle run: ");
+            }
+        })
+        .subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                Log.d(TAG, "收到消息: " + s);
+            }
+        });
+Log.d(TAG, "disposable isDisposed: " + disposable.isDisposed());
+```
+执行结果：
+```
+D/JamFF: doOnSubscribe:
+D/JamFF: doOnLifecycle: false
+D/JamFF: doOnNext: Hello
+D/JamFF: doOnEach: onNext
+D/JamFF: 收到消息: Hello
+D/JamFF: doAfterNext: Hello
+D/JamFF: doOnComplete:
+D/JamFF: doOnEach: onComplete
+D/JamFF: doFinally:
+D/JamFF: doAfterTerminate:
+D/JamFF: disposable isDisposed: true
+```
+
 
 
 

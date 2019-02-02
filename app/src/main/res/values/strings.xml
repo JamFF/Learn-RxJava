@@ -4,4 +4,5 @@
     <string name="subscribe_1">subscribe重载方法1</string>
     <string name="subscribe_2">subscribe重载方法2</string>
     <string name="observer">observer观察者</string>
+    <string name="do_operate">do操作符</string>
 </resources>

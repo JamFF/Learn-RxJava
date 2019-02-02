@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import io.reactivex.Notification;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.bt_subscribe_1).setOnClickListener(this);
         findViewById(R.id.bt_subscribe_2).setOnClickListener(this);
         findViewById(R.id.bt_observer).setOnClickListener(this);
+        findViewById(R.id.bt_do).setOnClickListener(this);
     }
 
     @Override
@@ -51,6 +53,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.bt_observer:
                 observer();
+                break;
+
+            case R.id.bt_do:
+                do_operate();
                 break;
         }
     }
@@ -157,5 +163,79 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d(TAG, "onComplete()");
             }
         });
+    }
+
+    // do操作符
+    private void do_operate() {
+        Disposable disposable = Observable.just("Hello")
+                .doOnNext(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        Log.d(TAG, "doOnNext: " + s);
+                    }
+                })
+                .doAfterNext(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        Log.d(TAG, "doAfterNext: " + s);
+                    }
+                })
+                .doOnComplete(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        Log.d(TAG, "doOnComplete: ");
+                    }
+                })
+                // 订阅之后回调的方法
+                .doOnSubscribe(new Consumer<Disposable>() {
+                    @Override
+                    public void accept(Disposable disposable) throws Exception {
+                        Log.d(TAG, "doOnSubscribe: ");
+                    }
+                })
+                .doAfterTerminate(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        Log.d(TAG, "doAfterTerminate: ");
+                    }
+                })
+                .doFinally(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        Log.d(TAG, "doFinally: ");
+                    }
+                })
+                // Observable每发射一个数据就会触发这个回调，不仅包括onNext，还包括onError和onCompleted
+                .doOnEach(new Consumer<Notification<String>>() {
+                    @Override
+                    public void accept(Notification<String> stringNotification) throws Exception {
+                        if (stringNotification.isOnNext()) {
+                            Log.d(TAG, "doOnEach: onNext");
+                        } else if (stringNotification.isOnComplete()) {
+                            Log.d(TAG, "doOnEach: onComplete");
+                        } else if (stringNotification.isOnError()) {
+                            Log.d(TAG, "doOnEach: onError");
+                        }
+                    }
+                })
+                // 订阅后可以取消订阅
+                .doOnLifecycle(new Consumer<Disposable>() {
+                    @Override
+                    public void accept(Disposable disposable) throws Exception {
+                        Log.d(TAG, "doOnLifecycle: " + disposable.isDisposed());
+                    }
+                }, new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        Log.d(TAG, "doOnLifecycle run: ");
+                    }
+                })
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        Log.d(TAG, "收到消息: " + s);
+                    }
+                });
+        Log.d(TAG, "disposable isDisposed: " + disposable.isDisposed());
     }
 }
